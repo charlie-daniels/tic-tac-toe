@@ -15,7 +15,7 @@ ol, ul {
 
 #container {
   height: 100vh;
-  display: grid;
+  display: flex;
   justify-content: center;
   align-items: center;
 }
@@ -26,7 +26,6 @@ ol, ul {
   display: grid;
   grid-template: 1fr 1fr 1fr / 1fr 1fr 1fr;
 }
-
 .tile {
   width: 100px;
   height: 100px;
@@ -34,7 +33,40 @@ ol, ul {
   justify-content: center;
   align-items: center;
 }
-
 #board, .tile {
   border: 1px solid black;
+}
+
+/* Messages */
+
+.hidden {
+  display: none;
+}
+#win-message {
+  width: 100%;
+  height: 100vh;
+  position: absolute;
+  top: 0;
+  left: 0;
+  animation: fade 3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+#win-message > h1 {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 1;
+  font-size: 4rem;
+}
+.background {
+  position: absolute;
+  width: 100%; 
+  height: 100%;
+  background: white;
+  opacity: 0.7;
+}
+
+@keyframes fade {
+  0%,100% { opacity: 0 }
+  50% { opacity: 1 }
 }

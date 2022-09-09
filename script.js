@@ -6,6 +6,12 @@ const displayController = (function (doc) {
     });
   }
 
+  const displayWinner = (winner) => {
+    const message = doc.querySelector('#win-message .message');
+    message.textContent = ``;
+    const winMessage = doc.querySelector('#win-message');
+    winMessage.classList.remove('hidden');
+  }
   const updateBoard = (move, player) => {
     const tile = doc.querySelector(`#board>[data-index='${move}']`);
     tile.textContent = player;
@@ -14,6 +20,7 @@ const displayController = (function (doc) {
     _addTileListeners(performClick);
   }
   return {
+    displayWinner,
     updateBoard,
     init
   }
@@ -73,7 +80,7 @@ const gameBoard = (function () {
     // Check diagonal
     let totalXY = board2D[0][0] + board2D[1][1] + board2D[2][2];
     if (totalXY === 3) return true;
-    let totalYX = board2D[2][2] + board2D[1][1] + board2D[0][0];
+    let totalYX = board2D[0][2] + board2D[1][1] + board2D[2][0];
     if (totalYX === 3) return true;
 
     return false;
@@ -85,7 +92,7 @@ const gameBoard = (function () {
     else return;
     displayController.updateBoard(nextPlayerMove, _currentPlayer);
     if (_checkWinner(nextPlayerMove) === true) {
-      // game win logic
+      displayController.displayWinner(_currentPlayer);
       // end this game, add total
       return;
     }
@@ -131,9 +138,16 @@ const Computer = () => {
   return Object.assign({}, protoPlayer, logic)
 }
 
+
+function assignAnimations(){
+  const winMessage = document.querySelector('#win-message'); 
+  winMessage.addEventListener("animationend", function(e) {
+    e.target.style.display = "none";
+  });
+}
 function newGame() {
   let player1 = Player(); let player2 = Player();
   gameBoard.newGame(player1, player2);
 }
-
+assignAnimations();
 newGame();
