@@ -28,15 +28,17 @@ const displayController = (function (doc) {
 
 const gameBoard = (function () {
   let _board = [];
-  let _currentPlayer = 'X'
+  let _currentPlayer;
   let _turn = 0;
+  let _player1;
+  let _player2;
 
   const _reset = () => {
     return new Array(9).fill('');
   }
   const _switchPlayer = (_currentPlayer) => {
-    if (_currentPlayer === 'X') return 'O';
-    return 'X';
+    if (_currentPlayer.getCharacter() === 'X') return _player2;
+    return _player1;
   }
   const _isTileEmpty = (index) => {
     if (_board[index] === '') return true;
@@ -90,7 +92,7 @@ const gameBoard = (function () {
     _turn++;
     if (_isTileEmpty(nextPlayerMove)) _setTile(nextPlayerMove, _currentPlayer);
     else return;
-    displayController.updateBoard(nextPlayerMove, _currentPlayer);
+    displayController.updateBoard(nextPlayerMove, _currentPlayer.getCharacter());
     if (_checkWinner(nextPlayerMove) === true) {
       displayController.displayWinner(_currentPlayer);
       // end this game, add total
@@ -99,9 +101,10 @@ const gameBoard = (function () {
     _currentPlayer = _switchPlayer(_currentPlayer);
   }
   const newGame = (player1, player2) => {
-    player1.reset();
-    player2.reset();
+    _player1 = player1;
+    _player2 = player2;
     _board = _reset();
+    _currentPlayer = player1;
     displayController.init(playRound);
   }
 
@@ -111,22 +114,22 @@ const gameBoard = (function () {
   }
 })();
 
-const Player = () => {
-  let _score = 0;
+const Player = (character) => {
   let _totalScore = 0;
+  let _character = character;
+  let isCurrentPlayer = false;
 
-  const getScore = () => _score;
+  const setCharacter = (character) => _character = character;
+  const getCharacter = () => _character;
   const getTotalScore = () => _totalScore;
-  const win = () => _score++;
-  const reset = () => {
-    _score = 0;
-  }
+  const win = () => _totalScore++;
 
   return {
-    getScore,
+    isCurrentPlayer,
+    setCharacter,
+    getCharacter,
     getTotalScore,
-    win,
-    reset
+    win
   };
 } 
 
@@ -146,7 +149,8 @@ function assignAnimations(){
   });
 }
 function newGame() {
-  let player1 = Player(); let player2 = Player();
+  let player1 = Player('X');
+  let player2 = Player('O');
   gameBoard.newGame(player1, player2);
 }
 assignAnimations();
