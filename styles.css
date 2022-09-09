@@ -10,3 +10,31 @@
 ol, ul {
   list-style: none;
 }
+
+/* Container */
+
+#container {
+  height: 100vh;
+  display: grid;
+  justify-content: center;
+  align-items: center;
+}
+
+/* Game board */
+
+#board {
+  display: grid;
+  grid-template: 1fr 1fr 1fr / 1fr 1fr 1fr;
+}
+
+.tile {
+  width: 100px;
+  height: 100px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+#board, .tile {
+  border: 1px solid black;
+}

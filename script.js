@@ -1,8 +1,7 @@
 const gameBoard = (function () {
   let _board = [];
   let _isFinished = false;
-  const newBoard = () => _board = new Array(9).fill('');
-  const printBoard = () => console.table(_board); // temp
+  const reset = () => _board = new Array(9).fill('');
   const isTileEmpty = (index) => {
     if (_board[index] === '') return true;
     return false;
@@ -11,39 +10,47 @@ const gameBoard = (function () {
     _board[tile] = player;
   }
   return {
-    newBoard,
-    printBoard, // temp
+    reset,
     isTileEmpty,
     setTile
   }
 })();
-const displayController = (function () {
+const displayController = (function (doc) {
   let currentPlayer = 'X';
-  let nextPlayerMove;
-  const _switchPlayer = () => {
-    if (currentPlayer === 1) return 2;
-    return 1;
+
+  const _switchPlayer = (currentPlayer) => {
+    if (currentPlayer === 'X') return 'O';
+    return 'X';
   }
-  const _playRound = () => {
-    if (gameBoard.isTileEmpty(nextPlayerMove)) gameBoard.setTile(nextPlayerMove, currentPlayer);
-    else return null;
-    gameBoard.printBoard();
-    currentPlayer = _switchPlayer();
+  const _updateBoard = (move, player) => {
+    const tile = doc.querySelector(`#board>[data-index='${move}']`);
+    tile.textContent = player;
   }
 
-  const setNextMove = (move) => nextPlayerMove = move;
+  const playRound = (nextPlayerMove) => {
+    if (gameBoard.isTileEmpty(nextPlayerMove)) gameBoard.setTile(nextPlayerMove, currentPlayer);
+    else return null; // Maybe add retry variable here?
+    _updateBoard(nextPlayerMove, currentPlayer);
+    console.log(currentPlayer);
+    currentPlayer = _switchPlayer(currentPlayer);
+  }
+  const assignTiles = () => {
+    const tiles = doc.querySelectorAll(`#board .tile`);
+    tiles.forEach(t => {
+      t.addEventListener('click', (e) => playRound(e.target.getAttribute('data-index')));
+    });
+  }
   const newGame = (player1, player2) => {
     player1.reset();
     player2.reset();
-    gameBoard.newBoard();
-    gameBoard.printBoard();
-    _playRound();
+    gameBoard.reset();
+    assignTiles();
   }
   return {
-    setNextMove,
-    newGame
+    newGame,
+    playRound
   }
-})();
+})(document);
 const Player = () => {
   let _score = 0;
   let _totalScore = 0;
@@ -69,6 +76,6 @@ const Computer = () => {
 }
 
 
+
 let player1 = Player(); let player2 = Player();
 displayController.newGame(player1, player2);
-gameBoard.printBoard();
