@@ -22,9 +22,10 @@ const displayController = (function (doc) {
 const gameBoard = (function () {
   let _board = [];
   let _currentPlayer = 'X'
+  let _turn = 0;
 
   const _reset = () => {
-    _board = new Array(9).fill('');
+    return new Array(9).fill('');
   }
   const _switchPlayer = (_currentPlayer) => {
     if (_currentPlayer === 'X') return 'O';
@@ -37,19 +38,63 @@ const gameBoard = (function () {
   const _setTile = (tile, player) => {
     _board[tile] = player;
   }
+  const _convertBoard2D = () => {
+    let board = [[],[],[]];
+    _board.map((tile, i) => {
+      let row = Math.floor(i / 3);
+      if(tile === _currentPlayer) board[row].push(1)
+      else board[row].push(0);
+    })
+    return board;
+  }
+  const _convertIndex2D = (index) => {
+    return {
+      x: index % 3,
+      y: Math.floor(index / 3)
+    }
+  }
+  const _checkWinner = (lastMove) => {
+    if (_turn === 9) console.log("Tie!"); // add tie logic, return null?
+    const board2D = _convertBoard2D();
+    const lastMoveIndex = _convertIndex2D(lastMove);
+    
+    // Check horizontal
+    let totalX = 0;
+    for (let i = 0; i < 3; i++) {
+      if (board2D[lastMoveIndex.y][i] === 1) totalX++;
+    }
+    if (totalX === 3) return true;
+    // Check horizontal
+    let totalY = 0;
+    for (let i = 0; i < 3; i++) {
+      if (board2D[i][lastMoveIndex.x] === 1) totalY++;
+    }
+    if (totalY === 3) return true;
+    // Check diagonal
+    let totalXY = board2D[0][0] + board2D[1][1] + board2D[2][2];
+    if (totalXY === 3) return true;
+    let totalYX = board2D[2][2] + board2D[1][1] + board2D[0][0];
+    if (totalYX === 3) return true;
+
+    return false;
+  }
 
   const playRound = (nextPlayerMove) => {
+    _turn++;
     if (_isTileEmpty(nextPlayerMove)) _setTile(nextPlayerMove, _currentPlayer);
     else return;
     displayController.updateBoard(nextPlayerMove, _currentPlayer);
-    // let result = _checkWinner();
-    // if (result != null) return;
+    if (_checkWinner(nextPlayerMove) === true) {
+      // game win logic
+      // end this game, add total
+      return;
+    }
     _currentPlayer = _switchPlayer(_currentPlayer);
   }
   const newGame = (player1, player2) => {
     player1.reset();
     player2.reset();
-    _reset();
+    _board = _reset();
     displayController.init(playRound);
   }
 
