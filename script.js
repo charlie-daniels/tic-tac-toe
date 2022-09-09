@@ -6,23 +6,28 @@ const displayController = (function (doc) {
     });
   }
 
-  const displayWinner = (winner) => {
-    const message = doc.querySelector('#win-message .message');
-    message.textContent = ``;
-    const winMessage = doc.querySelector('#win-message');
-    winMessage.classList.remove('hidden');
+  const displayResult = (result) => {
+    const message = doc.querySelector('#result-message .message');
+    message.textContent = result;
+    const resultMessage = doc.querySelector('#result-message');
+    resultMessage.classList.remove('hidden');
   }
   const updateBoard = (move, player) => {
     const tile = doc.querySelector(`#board>[data-index='${move}']`);
     tile.textContent = player;
   }
+  const clear = () => {
+    const tiles = doc.querySelectorAll(`#board .tile`);
+    tiles.forEach(tile => tile.textContent = '');
+  }
   const init = (performClick) => {
     _addTileListeners(performClick);
   }
   return {
-    displayWinner,
+    displayResult,
     updateBoard,
-    init
+    init,
+    clear
   }
 })(document);
 
@@ -63,7 +68,6 @@ const gameBoard = (function () {
     }
   }
   const _checkWinner = (lastMove) => {
-    if (_turn === 9) console.log("Tie!"); // add tie logic, return null?
     const board2D = _convertBoard2D();
     const lastMoveIndex = _convertIndex2D(lastMove);
     
@@ -84,21 +88,27 @@ const gameBoard = (function () {
     if (totalXY === 3) return true;
     let totalYX = board2D[0][2] + board2D[1][1] + board2D[2][0];
     if (totalYX === 3) return true;
-
+    if (_turn === 8) return null; 
     return false;
   }
 
   const playRound = (nextPlayerMove) => {
-    _turn++;
     if (_isTileEmpty(nextPlayerMove)) _setTile(nextPlayerMove, _currentPlayer);
     else return;
     displayController.updateBoard(nextPlayerMove, _currentPlayer.getCharacter());
-    if (_checkWinner(nextPlayerMove) === true) {
-      displayController.displayWinner(_currentPlayer);
-      // end this game, add total
+    const result = _checkWinner(nextPlayerMove);
+    if (result === true) {
+      displayController.displayResult(`${_currentPlayer.playerName} wins!`);
+      _currentPlayer.win();
+      newGame(_player1, _player2);
       return;
+    } else if (result === null) {
+      displayController.displayResult('Tie!');
+      newGame(_player1, _player2);
+    } else {
+      _currentPlayer = _switchPlayer(_currentPlayer);
     }
-    _currentPlayer = _switchPlayer(_currentPlayer);
+    _turn++;
   }
   const newGame = (player1, player2) => {
     _player1 = player1;
@@ -114,10 +124,11 @@ const gameBoard = (function () {
   }
 })();
 
-const Player = (character) => {
+const Player = (name, character) => {
   let _totalScore = 0;
   let _character = character;
   let isCurrentPlayer = false;
+  let playerName = name;
 
   const setCharacter = (character) => _character = character;
   const getCharacter = () => _character;
@@ -125,6 +136,7 @@ const Player = (character) => {
   const win = () => _totalScore++;
 
   return {
+    playerName,
     isCurrentPlayer,
     setCharacter,
     getCharacter,
@@ -143,14 +155,15 @@ const Computer = () => {
 
 
 function assignAnimations(){
-  const winMessage = document.querySelector('#win-message'); 
-  winMessage.addEventListener("animationend", function(e) {
+  const resultMessage = document.querySelector('#result-message'); 
+  resultMessage.addEventListener("animationend", function(e) {
     e.target.style.display = "none";
+    displayController.clear();
   });
 }
 function newGame() {
-  let player1 = Player('X');
-  let player2 = Player('O');
+  let player1 = Player('Jack', 'X');
+  let player2 = Player('Jill', 'O');
   gameBoard.newGame(player1, player2);
 }
 assignAnimations();
