@@ -31,7 +31,7 @@ const gameBoard = (function () {
     return 'X';
   }
   const _isTileEmpty = (index) => {
-    if (_board[index] !== 'X' || _board[index] !== 'O') return true;
+    if (_board[index] === '') return true;
     return false;
   }
   const _setTile = (tile, player) => {
@@ -40,7 +40,7 @@ const gameBoard = (function () {
 
   const playRound = (nextPlayerMove) => {
     if (_isTileEmpty(nextPlayerMove)) _setTile(nextPlayerMove, _currentPlayer);
-    else return null; // Maybe add retry variable here?
+    else return;
     displayController.updateBoard(nextPlayerMove, _currentPlayer);
     // let result = _checkWinner();
     // if (result != null) return;
@@ -62,7 +62,7 @@ const gameBoard = (function () {
 const Player = () => {
   let _score = 0;
   let _totalScore = 0;
-  
+
   const getScore = () => _score;
   const getTotalScore = () => _totalScore;
   const win = () => _score++;
