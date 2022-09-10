@@ -15,9 +15,17 @@ ol, ul {
 
 #container {
   height: 100vh;
+  width: 100vw;
   display: flex;
   justify-content: center;
   align-items: center;
+}
+
+/* Menu */
+
+#start-game {
+  font-size: 2rem;
+  padding: .3rem 1rem;
 }
 
 /* Game board */
@@ -42,27 +50,23 @@ ol, ul {
 .hidden {
   display: none;
 }
-#result-message {
+#result-message, #menu {
   width: 100%;
   height: 100vh;
-  position: absolute;
-  top: 0;
-  left: 0;
+  position: fixed;
 }
-#result-message > h1 {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
+#result-message h1 {
   z-index: 1;
   font-size: 4rem;
 }
 .background {
-  position: absolute;
   width: 100%; 
   height: 100%;
   background: white;
-  opacity: 0.7;
+  opacity: 0.9;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 /* Animations */

@@ -1,45 +1,70 @@
 const displayController = (function (doc) {
-  const _addTileListeners = (performClick) => {
-    const tiles = doc.querySelectorAll(`#board .tile`);
-    tiles.forEach(t => {
-      t.addEventListener('click', (e) => performClick(e.target.getAttribute('data-index')));
-    });
-  }
-
-  const displayResult = (result) => {
-    const message = doc.querySelector('#result-message .message');
-    message.textContent = result;
-    const resultMessage = doc.querySelector('#result-message');
-    resultMessage.classList.remove('hidden');
-  }
-  const updateBoard = (move, player) => {
-    const tile = doc.querySelector(`#board>[data-index='${move}']`);
-    tile.textContent = player;
-  }
-  const clear = () => {
+  const _clear = () => {
     const tiles = doc.querySelectorAll(`#board .tile`);
     tiles.forEach(tile => tile.textContent = '');
   }
-  const init = (performClick) => {
-    _addTileListeners(performClick);
+  const _addFade = (elem) => {
+    elem.style.display = 'inline';
+    elem.classList.add('fade');
+    elem.addEventListener('animationend', function(e) {
+      e.target.style.display = 'none';
+      e.target.classList.remove('fade');
+    });
+  }
+  const _toggleVisible = (elem) => {
+    if (elem.classList.contains('hidden')) {
+      elem.classList.remove('hidden');
+    } else {
+      elem.classList.add('hidden');
+    }
+  }
+  const _addTileListeners = () => {
+    const tiles = doc.querySelectorAll(`#board .tile`);
+    tiles.forEach(t => {
+      t.addEventListener('click', (e) => gameBoard.playRound(e.target.getAttribute('data-index')));
+    });
+  }
+  const _addMenuListeners = () => {
+    const buttonStart = doc.querySelector('#start-game');
+    buttonStart.addEventListener('click', () => {
+      const menu = doc.querySelector('#menu');
+      menu.classList.add('hidden');
+    });
+  }
+  
+  const displayResult = (result) => {
+    const message = doc.querySelector('#message');
+    message.textContent = result;
+    const resultMessage = doc.querySelector('#result-message');
+    _toggleVisible(resultMessage);
+    _addFade(resultMessage);
+    _clear();
+  }
+  const updateBoard = (move, player) => {
+    const tile = doc.querySelector(`#board>[data-index='${move}']`);
+    tile.textContent = player.getCharacter();
+  }
+  const init = () => {
+    _addTileListeners();
+    _addMenuListeners();
   }
   return {
     displayResult,
     updateBoard,
-    init,
-    clear
+    init
   }
 })(document);
 
 const gameBoard = (function () {
   let _board = [];
   let _currentPlayer;
-  let _turn = 0;
+  let _turn;
   let _player1;
   let _player2;
 
   const _reset = () => {
-    return new Array(9).fill('');
+    _turn = 0;
+    _board = new Array(9).fill('');
   }
   const _switchPlayer = (_currentPlayer) => {
     if (_currentPlayer.getCharacter() === 'X') return _player2;
@@ -95,8 +120,9 @@ const gameBoard = (function () {
   const playRound = (nextPlayerMove) => {
     if (_isTileEmpty(nextPlayerMove)) _setTile(nextPlayerMove, _currentPlayer);
     else return;
-    displayController.updateBoard(nextPlayerMove, _currentPlayer.getCharacter());
+    displayController.updateBoard(nextPlayerMove, _currentPlayer);
     const result = _checkWinner(nextPlayerMove);
+    console.log(result);
     if (result === true) {
       displayController.displayResult(`${_currentPlayer.playerName} wins!`);
       _currentPlayer.win();
@@ -107,15 +133,14 @@ const gameBoard = (function () {
       newGame(_player1, _player2);
     } else {
       _currentPlayer = _switchPlayer(_currentPlayer);
+      _turn++;
     }
-    _turn++;
   }
   const newGame = (player1, player2) => {
     _player1 = player1;
     _player2 = player2;
-    _board = _reset();
+    _reset();
     _currentPlayer = player1;
-    displayController.init(playRound);
   }
 
   return {
@@ -153,18 +178,10 @@ const Computer = () => {
   return Object.assign({}, protoPlayer, logic)
 }
 
-
-function assignAnimations(){
-  const resultMessage = document.querySelector('#result-message'); 
-  resultMessage.addEventListener("animationend", function(e) {
-    e.target.style.display = "none";
-    displayController.clear();
-  });
-}
 function newGame() {
   let player1 = Player('Jack', 'X');
   let player2 = Player('Jill', 'O');
   gameBoard.newGame(player1, player2);
+  displayController.init();
 }
-assignAnimations();
 newGame();
