@@ -47,7 +47,6 @@ const displayController = (function (doc) {
   }
   const showCurrentPlayer = (p1, p2, current) => {
     const playerCharacters = doc.querySelectorAll('.player .character');
-    console.log({p1, p2, current});
     if (current === p1) {
       playerCharacters[1].style.stroke = '#ee2087';
       playerCharacters[0].style.stroke = '#e9e5e5';
@@ -147,21 +146,21 @@ const gameBoard = (function () {
       displayController.displayResult(`${_currentPlayer.playerName} wins!`);
       _currentPlayer.win();
       displayController.updatePlayers(_player1, _player2, _currentPlayer);
-      newGame(_player1, _player2);
+      newGame(_player1, _player2, _switchPlayer(_currentPlayer));
     } else if (result === null) {
       displayController.displayResult('Tie!');
-      newGame(_player1, _player2);
+      newGame(_player1, _player2, _switchPlayer(_currentPlayer));
     } else {
       _currentPlayer = _switchPlayer(_currentPlayer);
       _turn++;
     }
     displayController.showCurrentPlayer(_player1, _player2, _currentPlayer);
   }
-  const newGame = (player1, player2) => {
+  const newGame = (player1, player2, prev) => {
     _player1 = player1;
     _player2 = player2;
     _reset();
-    _currentPlayer = player1;
+    _currentPlayer = prev;
   }
 
   return {
@@ -200,7 +199,7 @@ const Computer = () => {
 function newGame(player1Name, player2Name) {
   let player1 = Player(player1Name, 'X');
   let player2 = Player(player2Name, 'O');
-  gameBoard.newGame(player1, player2);
+  gameBoard.newGame(player1, player2, player1);
   displayController.init(player1, player2);
 }
 
