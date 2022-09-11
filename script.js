@@ -45,6 +45,17 @@ const displayController = (function (doc) {
       tile.style.backgroundImage = "url('img/o.svg')";
     }
   }
+  const showCurrentPlayer = (p1, p2, current) => {
+    const playerCharacters = doc.querySelectorAll('.player .character');
+    console.log({p1, p2, current});
+    if (current === p1) {
+      playerCharacters[1].style.stroke = '#ee2087';
+      playerCharacters[0].style.stroke = '#e9e5e5';
+    } else {
+      playerCharacters[0].style.stroke = '#ee2087';
+      playerCharacters[1].style.stroke = '#e9e5e5';
+    }
+  }
   const updatePlayers = (p1, p2) => {
     const playerScores = doc.querySelectorAll('.player .score');
     playerScores[0].textContent = p1.getTotalScore();
@@ -59,6 +70,7 @@ const displayController = (function (doc) {
   return {
     displayResult,
     updateBoard,
+    showCurrentPlayer,
     updatePlayers,
     init
   }
@@ -134,9 +146,8 @@ const gameBoard = (function () {
     if (result === true) {
       displayController.displayResult(`${_currentPlayer.playerName} wins!`);
       _currentPlayer.win();
-      displayController.updatePlayers(_player1, _player2);
+      displayController.updatePlayers(_player1, _player2, _currentPlayer);
       newGame(_player1, _player2);
-      return;
     } else if (result === null) {
       displayController.displayResult('Tie!');
       newGame(_player1, _player2);
@@ -144,6 +155,7 @@ const gameBoard = (function () {
       _currentPlayer = _switchPlayer(_currentPlayer);
       _turn++;
     }
+    displayController.showCurrentPlayer(_player1, _player2, _currentPlayer);
   }
   const newGame = (player1, player2) => {
     _player1 = player1;
@@ -161,7 +173,6 @@ const gameBoard = (function () {
 const Player = (name, character) => {
   let _totalScore = 0;
   let _character = character;
-  let isCurrentPlayer = false;
   let playerName = name;
 
   const setCharacter = (character) => _character = character;
@@ -171,7 +182,6 @@ const Player = (name, character) => {
 
   return {
     playerName,
-    isCurrentPlayer,
     setCharacter,
     getCharacter,
     getTotalScore,

@@ -15,7 +15,7 @@ ol, ul {
 /* Variables */
 
 :root {
-  --bg-color: #37134a;
+  --bg-color: #3b164e;
   --dark-bg-color: #311143;
   --lowlight-color: #ee2087;
   --highlight-color: #f2489d;
@@ -95,6 +95,10 @@ footer, header {
 .player h2, .player h3 {
   font-size: 1.5rem;
   margin-bottom: .5rem;
+}
+.player .is-active {
+  stroke: var(--lowlight-color);
+  box-shadow: 2px 2px 0 2px var(--dark-bg-color);
 }
 
 /* Game board */
