@@ -1,16 +1,16 @@
 const displayController = (function (doc) {
   const _clear = () => {
-    const tiles = doc.querySelectorAll(`.tile`);
+    const tiles = doc.querySelectorAll('.tile');
     tiles.forEach(tile => tile.style.backgroundImage = 'none');
   }
   const _addFade = (elem) => {
-    elem.style.display = 'inline';
     elem.classList.add('fade');
+    _toggleVisible(elem);
     elem.addEventListener('animationend', function(e) {
-      e.target.style.display = 'none';
       _clear();
+      _toggleVisible(e.target);
       e.target.classList.remove('fade');
-    });
+    }, { once: true });
   }
   const _toggleVisible = (elem) => {
     if (elem.classList.contains('hidden')) {
@@ -25,12 +25,16 @@ const displayController = (function (doc) {
       t.addEventListener('click', (e) => gameBoard.playRound(e.target.getAttribute('data-index')));
     });
   }
+  const _setPlayerNames = (p1, p2) => {
+    const playerNames = doc.querySelectorAll('.player .name');
+    playerNames[0].textContent = p1.playerName;
+    playerNames[1].textContent = p2.playerName;
+  }
   
   const displayResult = (result) => {
     const message = doc.querySelector('#message');
     message.textContent = result;
     const resultMessage = doc.querySelector('#result-message');
-    _toggleVisible(resultMessage);
     _addFade(resultMessage);
   }
   const updateBoard = (move, player) => {
@@ -41,12 +45,21 @@ const displayController = (function (doc) {
       tile.style.backgroundImage = "url('img/o.svg')";
     }
   }
-  const init = () => {
+  const updatePlayers = (p1, p2) => {
+    const playerScores = doc.querySelectorAll('.player .score');
+    playerScores[0].textContent = p1.getTotalScore();
+    playerScores[1].textContent = p2.getTotalScore();
+  }
+  const init = (p1, p2) => {
     _addTileListeners();
+    _setPlayerNames(p1, p2);
+    const menu = doc.querySelector('#menu');
+    _toggleVisible(menu);
   }
   return {
     displayResult,
     updateBoard,
+    updatePlayers,
     init
   }
 })(document);
@@ -118,10 +131,10 @@ const gameBoard = (function () {
     else return;
     displayController.updateBoard(nextPlayerMove, _currentPlayer);
     const result = _checkWinner(nextPlayerMove);
-    console.log(result);
     if (result === true) {
       displayController.displayResult(`${_currentPlayer.playerName} wins!`);
       _currentPlayer.win();
+      displayController.updatePlayers(_player1, _player2);
       newGame(_player1, _player2);
       return;
     } else if (result === null) {
@@ -174,10 +187,18 @@ const Computer = () => {
   return Object.assign({}, protoPlayer, logic)
 }
 
-function newGame() {
-  let player1 = Player('Jack', 'X');
-  let player2 = Player('Jill', 'O');
+function newGame(player1Name, player2Name) {
+  let player1 = Player(player1Name, 'X');
+  let player2 = Player(player2Name, 'O');
   gameBoard.newGame(player1, player2);
-  displayController.init();
+  displayController.init(player1, player2);
 }
-newGame();
+
+const playerForm = document.querySelector('#menu form');
+playerForm.addEventListener('submit', (e) => {
+  e.preventDefault();
+  const formData = new FormData(playerForm);
+  let p1 = formData.get('player-1');
+  let p2 = formData.get('player-2');
+  newGame(p1, p2);
+});

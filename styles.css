@@ -12,11 +12,11 @@
 ol, ul {
   list-style: none;
 }
-
 /* Variables */
 
 :root {
   --bg-color: #37134a;
+  --dark-bg-color: #311143;
   --lowlight-color: #ee2087;
   --highlight-color: #f2489d;
   --text-color: #e9e5e5;
@@ -39,12 +39,17 @@ ol, ul {
 
 /* Header */
 
-header h1 {
+header {
+  margin-bottom: auto;
+  padding: .5rem;
+  box-shadow: 0 10px 10px 0 var(--dark-bg-color);
+}
+h1 {
   display: inline;
   font-size: 5rem;
 }
-header h1:nth-of-type(2) {
-  color: var(--lowlight-color)
+h1:nth-of-type(2) {
+  color: var(--lowlight-color);
 }
 
 /* Footer */
@@ -52,14 +57,44 @@ header h1:nth-of-type(2) {
 footer {
   margin-top: auto;
   padding: .5rem;
+  box-shadow: 0 -10px 10px 0 var(--dark-bg-color);
 }
 footer * {
   display: inline;
 }
 footer svg {
+  color: var(--lowlight-color);
   vertical-align: middle;
   width: 1.5rem;
   height: 1.5rem;
+}
+footer, header {
+  background: var(--dark-bg-color);
+}
+
+/* Game container */
+#game-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 1rem;
+}
+
+/* Player */
+
+.player { 
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 100px;
+}
+.player img {
+  width: 100px;
+  height: 100px;
+}
+.player h2, .player h3 {
+  font-size: 1.5rem;
+  margin-bottom: .5rem;
 }
 
 /* Game board */
@@ -71,7 +106,7 @@ footer svg {
   padding: 30px;
   border-radius: calc(var(--board-radius) + 30px);
   background: var(--lowlight-color);
-  justify-self: center;
+  box-shadow: 8px 4px 10px 0 var(--dark-bg-color);
 }
 .tile {
   width: 100px;
@@ -121,10 +156,49 @@ footer svg {
   border-bottom-right-radius: var(--board-radius);
 }
 
+/* Menu */
+
+#menu {
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;  
+  justify-content: center;
+  align-items: center;
+  position: fixed;
+  background: rgba(0,0,0,0.7);
+}
+#menu h1 {
+  font-size: 4rem;
+}
+#menu form {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+}
+#menu input {
+  display: block;
+  font-size: 2rem;
+  background: rgba(0,0,0,0.3);
+  text-align: center;
+  padding: 1rem;
+  border: none;
+  border-radius: var(--board-radius)
+}
+#menu input[type='submit'] {
+  font-size: 3rem;
+  width: 60%;
+}
+#menu .title {
+  margin: 1rem;
+  padding-left: 1.2rem;
+}
+
 /* Messages */
 
 .hidden {
-  display: none;
+  display: none !important;
 }
 .background {
   width: 100%; 
