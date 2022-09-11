@@ -1,13 +1,14 @@
 const displayController = (function (doc) {
   const _clear = () => {
-    const tiles = doc.querySelectorAll(`#board .tile`);
-    tiles.forEach(tile => tile.textContent = '');
+    const tiles = doc.querySelectorAll(`.tile`);
+    tiles.forEach(tile => tile.style.backgroundImage = 'none');
   }
   const _addFade = (elem) => {
     elem.style.display = 'inline';
     elem.classList.add('fade');
     elem.addEventListener('animationend', function(e) {
       e.target.style.display = 'none';
+      _clear();
       e.target.classList.remove('fade');
     });
   }
@@ -19,16 +20,9 @@ const displayController = (function (doc) {
     }
   }
   const _addTileListeners = () => {
-    const tiles = doc.querySelectorAll(`#board .tile`);
+    const tiles = doc.querySelectorAll(`.tile`);
     tiles.forEach(t => {
       t.addEventListener('click', (e) => gameBoard.playRound(e.target.getAttribute('data-index')));
-    });
-  }
-  const _addMenuListeners = () => {
-    const buttonStart = doc.querySelector('#start-game');
-    buttonStart.addEventListener('click', () => {
-      const menu = doc.querySelector('#menu');
-      menu.classList.add('hidden');
     });
   }
   
@@ -38,15 +32,17 @@ const displayController = (function (doc) {
     const resultMessage = doc.querySelector('#result-message');
     _toggleVisible(resultMessage);
     _addFade(resultMessage);
-    _clear();
   }
   const updateBoard = (move, player) => {
-    const tile = doc.querySelector(`#board>[data-index='${move}']`);
-    tile.textContent = player.getCharacter();
+    const tile = doc.querySelector(`[data-index='${move}']`);
+    if (player.getCharacter() === 'X') {
+      tile.style.backgroundImage = "url('img/x.svg')";
+    } else {
+      tile.style.backgroundImage = "url('img/o.svg')";
+    }
   }
   const init = () => {
     _addTileListeners();
-    _addMenuListeners();
   }
   return {
     displayResult,
