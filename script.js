@@ -154,7 +154,7 @@ const gameBoard = (function () {
       _currentPlayer = _switchPlayer(_currentPlayer);
       _turn++;
     }
-    displayController.showCurrentPlayer(_player1, _player2, _currentPlayer);
+    displayController.showCurrentPlayer(_player1, _player2, _switchPlayer(_currentPlayer));
   }
   const newGame = (player1, player2, prev) => {
     _player1 = player1;
